@@ -1,5 +1,9 @@
 # Reinforcement Learning - Learning how to play Flappy Bird in PyTorch
 
+This sample is published as part of the corresponding blog article at https://www.toptal.com/deep-learning/pytorch-reinforcement-learning-tutorial
+ 
+Visit https://www.toptal.com/blog and subscribe to our newsletter to read great posts!
+
 ##### Dependencies:
 * Python 3.6.5
 * pygame 1.9.3
