@@ -6,8 +6,7 @@ Visit https://www.toptal.com/blog and subscribe to our newsletter to read great 
 
 ##### Dependencies:
 * Python 3.6.5
-* pygame 1.9.3
-* torch 0.4.0
+* Run `pip3 install -r requirements.txt` to install dependencies.
 
 ##### How to run:
 * Run `python dqn.py test` to run pretrained neural network model.
@@ -26,4 +25,3 @@ References:
 * http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html
 * https://en.wikipedia.org/wiki/Flappy_Bird
 * https://pytorch.org/
-

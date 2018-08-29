@@ -232,7 +232,10 @@ def test(model):
 
 def main(mode):
     if mode == 'test':
-        model = torch.load('pretrained_model/current_model_2000000.pth').eval()
+        if torch.cuda.is_available():
+            model = torch.load('pretrained_model/current_model_2000000.pth').eval()
+        else:
+            model = torch.load('pretrained_model/current_model_2000000.pth', map_location='cpu').eval()
         if torch.cuda.is_available():  # put on GPU if CUDA is available
             model = model.cuda()
         test(model)
