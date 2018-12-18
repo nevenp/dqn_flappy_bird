@@ -1,14 +1,15 @@
 import random
-import pygame
 from itertools import cycle
+
+import pygame
 
 
 def load():
     # path of player with different states
     PLAYER_PATH = (
-            'assets/sprites/redbird-upflap.png',
-            'assets/sprites/redbird-midflap.png',
-            'assets/sprites/redbird-downflap.png'
+        'assets/sprites/redbird-upflap.png',
+        'assets/sprites/redbird-midflap.png',
+        'assets/sprites/redbird-downflap.png'
     )
 
     # path of background
@@ -20,18 +21,10 @@ def load():
     IMAGES, HITMASKS = {}, {}
 
     # numbers sprites for score display
-    IMAGES['numbers'] = (
-        pygame.image.load('assets/sprites/0.png').convert_alpha(),
-        pygame.image.load('assets/sprites/1.png').convert_alpha(),
-        pygame.image.load('assets/sprites/2.png').convert_alpha(),
-        pygame.image.load('assets/sprites/3.png').convert_alpha(),
-        pygame.image.load('assets/sprites/4.png').convert_alpha(),
-        pygame.image.load('assets/sprites/5.png').convert_alpha(),
-        pygame.image.load('assets/sprites/6.png').convert_alpha(),
-        pygame.image.load('assets/sprites/7.png').convert_alpha(),
-        pygame.image.load('assets/sprites/8.png').convert_alpha(),
-        pygame.image.load('assets/sprites/9.png').convert_alpha()
-    )
+    IMAGES['numbers'] = [
+        pygame.image.load('assets/sprites/{}.png'.format(idx)).convert_alpha()
+        for idx in range(10)
+    ]
 
     # base (ground) sprite
     IMAGES['base'] = pygame.image.load('assets/sprites/base.png').convert_alpha()
@@ -40,11 +33,10 @@ def load():
     IMAGES['background'] = pygame.image.load(BACKGROUND_PATH).convert()
 
     # select random player sprites
-    IMAGES['player'] = (
-        pygame.image.load(PLAYER_PATH[0]).convert_alpha(),
-        pygame.image.load(PLAYER_PATH[1]).convert_alpha(),
-        pygame.image.load(PLAYER_PATH[2]).convert_alpha(),
-    )
+    IMAGES['player'] = [
+        pygame.image.load(PLAYER_PATH[idx]).convert_alpha()
+        for idx in range(3)
+    ]
 
     # select random pipe sprites
     IMAGES['pipe'] = (
@@ -54,17 +46,16 @@ def load():
     )
 
     # hismask for pipes
-    HITMASKS['pipe'] = (
-        getHitmask(IMAGES['pipe'][0]),
-        getHitmask(IMAGES['pipe'][1]),
-    )
+    HITMASKS['pipe'] = [
+        getHitmask(IMAGES['pipe'][idx])
+        for idx in range(2)
+    ]
 
     # hitmask for player
-    HITMASKS['player'] = (
-        getHitmask(IMAGES['player'][0]),
-        getHitmask(IMAGES['player'][1]),
-        getHitmask(IMAGES['player'][2]),
-    )
+    HITMASKS['player'] = [
+        getHitmask(IMAGES['player'][idx])
+        for idx in range(3)
+    ]
 
     return IMAGES, HITMASKS
 
@@ -75,12 +66,12 @@ def getHitmask(image):
     for x in range(image.get_width()):
         mask.append([])
         for y in range(image.get_height()):
-            mask[x].append(bool(image.get_at((x,y))[3]))
+            mask[x].append(bool(image.get_at((x, y))[3]))
     return mask
 
 
-FPS = 99999999999999999999#30
-SCREENWIDTH  = 288
+FPS = 30
+SCREENWIDTH = 288
 SCREENHEIGHT = 512
 
 pygame.init()
@@ -89,7 +80,7 @@ SCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
 pygame.display.set_caption('Flappy Bird')
 
 IMAGES, HITMASKS = load()
-PIPEGAPSIZE = 100 # gap between upper and lower part of pipe
+PIPEGAPSIZE = 100  # gap between upper and lower part of pipe
 BASEY = SCREENHEIGHT * 0.79
 
 PLAYER_WIDTH = IMAGES['player'][0].get_width()
@@ -122,12 +113,12 @@ class GameState:
 
         # player velocity, max velocity, downward accleration, accleration on flap
         self.pipeVelX = -4
-        self.playerVelY    =  0    # player's velocity along Y, default same as playerFlapped
-        self.playerMaxVelY =  10   # max vel along Y, max descend speed
-        self.playerMinVelY =  -8   # min vel along Y, max ascend speed
-        self.playerAccY    =   1   # players downward accleration
-        self.playerFlapAcc =  -9   # players speed on flapping
-        self.playerFlapped = False # True when player flaps
+        self.playerVelY = 0  # player's velocity along Y, default same as playerFlapped
+        self.playerMaxVelY = 10  # max vel along Y, max descend speed
+        self.playerMinVelY = -8  # min vel along Y, max ascend speed
+        self.playerAccY = 1  # players downward accleration
+        self.playerFlapAcc = -9  # players speed on flapping
+        self.playerFlapped = False  # True when player flaps
 
     def frame_step(self, input_actions):
         pygame.event.pump()
@@ -185,16 +176,16 @@ class GameState:
             self.lowerPipes.pop(0)
 
         # check if crash here
-        isCrash= checkCrash({'x': self.playerx, 'y': self.playery,
-                             'index': self.playerIndex},
-                            self.upperPipes, self.lowerPipes)
+        isCrash = checkCrash({'x': self.playerx, 'y': self.playery,
+                              'index': self.playerIndex},
+                             self.upperPipes, self.lowerPipes)
         if isCrash:
             terminal = True
             self.__init__()
             reward = -1
 
         # draw sprites
-        SCREEN.blit(IMAGES['background'], (0,0))
+        SCREEN.blit(IMAGES['background'], (0, 0))
 
         for uPipe, lPipe in zip(self.upperPipes, self.lowerPipes):
             SCREEN.blit(IMAGES['pipe'][0], (uPipe['x'], uPipe['y']))
@@ -216,7 +207,7 @@ def getRandomPipe():
     """returns a randomly generated pipe"""
     # y of gap between upper and lower pipe
     gapYs = [20, 30, 40, 50, 60, 70, 80, 90]
-    index = random.randint(0, len(gapYs)-1)
+    index = random.randint(0, len(gapYs) - 1)
     gapY = gapYs[index]
 
     gapY += int(BASEY * 0.2)
@@ -231,7 +222,7 @@ def getRandomPipe():
 def showScore(score):
     """displays score in center of screen"""
     scoreDigits = [int(x) for x in list(str(score))]
-    totalWidth = 0 # total width of all numbers to be printed
+    totalWidth = 0  # total width of all numbers to be printed
 
     for digit in scoreDigits:
         totalWidth += IMAGES['numbers'][digit].get_width()
@@ -255,7 +246,7 @@ def checkCrash(player, upperPipes, lowerPipes):
     else:
 
         playerRect = pygame.Rect(player['x'], player['y'],
-                      player['w'], player['h'])
+                                 player['w'], player['h'])
 
         for uPipe, lPipe in zip(upperPipes, lowerPipes):
             # upper and lower pipe rects
@@ -289,7 +280,6 @@ def pixelCollision(rect1, rect2, hitmask1, hitmask2):
 
     for x in range(rect.width):
         for y in range(rect.height):
-            if hitmask1[x1+x][y1+y] and hitmask2[x2+x][y2+y]:
+            if hitmask1[x1 + x][y1 + y] and hitmask2[x2 + x][y2 + y]:
                 return True
     return False
-
