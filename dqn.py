@@ -1,17 +1,15 @@
-import cv2
+import os
 import random
-import numpy as np
+import sys
+import time
 
+import cv2
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 
-import time
-
 from game.flappy_bird import GameState
-
-import os
-import sys
 
 
 class NeuralNetwork(nn.Module):
@@ -231,22 +229,31 @@ def test(model):
 
 
 def main(mode):
+    cuda_is_available = torch.cuda.is_available()
+
     if mode == 'test':
-        if torch.cuda.is_available():
-            model = torch.load('pretrained_model/current_model_2000000.pth').eval()
-        else:
-            model = torch.load('pretrained_model/current_model_2000000.pth', map_location='cpu').eval()
-        if torch.cuda.is_available():  # put on GPU if CUDA is available
+        model = torch.load(
+            'pretrained_model/current_model_2000000.pth',
+            map_location='cpu' if not cuda_is_available else None
+        ).eval()
+
+        if cuda_is_available:  # put on GPU if CUDA is available
             model = model.cuda()
+
         test(model)
+
     elif mode == 'train':
         if not os.path.exists('pretrained_model/'):
             os.mkdir('pretrained_model/')
+
         model = NeuralNetwork()
-        if torch.cuda.is_available():  # put on GPU if CUDA is available
+
+        if cuda_is_available:  # put on GPU if CUDA is available
             model = model.cuda()
+
         model.apply(init_weights)
         start = time.time()
+
         train(model, start)
 
 
